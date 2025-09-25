@@ -1,0 +1,27 @@
+body {
+  margin: 0 auto;
+  max-width: 720px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.6;
+  padding: 2rem 1.5rem;
+}
+
+header {
+  margin-bottom: 2rem;
+}
+
+h1,
+h2 {
+  font-weight: 600;
+}
+
+section + section {
+  margin-top: 2rem;
+}
+
+code {
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+  background-color: #f4f4f4;
+  font-size: 0.9em;
+}

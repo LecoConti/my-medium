@@ -17,7 +17,13 @@ This task list maps the user stories from the backlog to concrete technical task
 
 ### Epic: Infrastructure Setup
 
-**Task R0-T001: Project Foundation Setup**
+**Task R0-T001: Project Foundation Setup** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Initialized Node project with Eleventy-centric scripts and MIT metadata
+✓ Installed @11ty/eleventy, gray-matter, reading-time, minisearch plus ESLint/Prettier
+✓ Created content/, assets/, site/, scripts/, functions/ directories per guidelines
+✓ Added .gitignore and README.md describing setup and structure
+-->
 - **Stories Addressed:** Foundation for all R0 stories
 - **Sub-tasks:**
   - Initialize Node.js project with package.json
@@ -27,7 +33,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** None
 - **Deliverables:** Working repository with build system foundation
 
-**Task R0-T002: Eleventy Configuration**
+**Task R0-T002: Eleventy Configuration** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added `.eleventy.js` with collections (articles, authors, publications, topics, tags), readable date + reading time filters, Markdown-It with Prism highlighting, and asset passthrough
+✓ Updated npm scripts to wrap Eleventy via `npx` and verified `npm run build`
+✓ Created scaffold templates/assets (site/index.njk, assets/styles/main.css) and gitkeeps for content directories
+-->
 - **Stories Addressed:** All R0 content rendering stories
 - **Sub-tasks:**
   - Configure .eleventy.js with collections, filters, and shortcodes
@@ -38,7 +49,11 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T001
 - **Deliverables:** Functional Eleventy build system
 
-**Task R0-T003: Netlify Deployment Setup**
+**Task R0-T003: Netlify Deployment Setup** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added `netlify.toml` with build command, Node 18 env, security headers, redirects, and compression settings
+✓ Documented deployment workflow in README and validated `npm run build`
+✓ Netlify connection pending human action (create site + enable HTTPS) -->
 - **Stories Addressed:** All R0 stories requiring hosting
 - **Sub-tasks:**
   - Create netlify.toml with build configuration
