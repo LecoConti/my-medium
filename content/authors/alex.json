@@ -1,0 +1,20 @@
+{
+  "id": "alex",
+  "handle": "alex",
+  "name": "Alex Conti",
+  "bio": "Tech strategist building human-centered publishing tools.",
+  "avatar": "/assets/images/authors/alex.jpg",
+  "social-links": {
+    "website": "https://leco.dev",
+    "linkedin": "https://www.linkedin.com/in/leconti",
+    "github": "https://github.com/LecoConti"
+  },
+  "settings": {
+    "publication-roles": {
+      "ai-strategy": "owner"
+    },
+    "contact-info": {
+      "email": "alex@leco.dev"
+    }
+  }
+}

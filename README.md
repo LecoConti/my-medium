@@ -17,6 +17,10 @@ Static-first publishing prototype built with Eleventy and Minisearch to support 
    ```bash
    npm run build
    ```
+5. Verify content schemas remain valid:
+   ```bash
+   node scripts/validate-content.mjs
+   ```
 
 ## Project Layout
 

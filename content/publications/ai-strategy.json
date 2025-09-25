@@ -1,0 +1,13 @@
+{
+  "id": "ai-strategy",
+  "name": "AI Strategy",
+  "slug": "ai-strategy",
+  "description": "Playbooks and analysis for practical AI adoption.",
+  "logo": "/assets/images/publications/ai-strategy-logo.svg",
+  "founded-date": "2024-06-01",
+  "team": {
+    "editors": ["alex"],
+    "contributors": ["ana", "thiago"],
+    "featured-authors": ["alex"]
+  }
+}

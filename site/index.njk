@@ -19,11 +19,19 @@
           <ul>
             {% for article in collections.articles %}
               <li>
-                <strong>{{ article.data.title or article.id }}</strong>
-                <div>
-                  <span>{{ article.data.publishedAt | readableDate('en-US') }}</span>
-                  <span>· {{ article.content | readingTime }}</span>
-                </div>
+                <article>
+                  <header>
+                    <h3>{{ article.data.title or article.id }}</h3>
+                    <div class="meta">
+                      <span>{{ article.data['date-published'] | readableDate('en-US') }}</span>
+                      <span>· {{ article.data['reading-meta'].text }}</span>
+                      <span>· v{{ article.data.version }}</span>
+                    </div>
+                  </header>
+                  {% if article.data['cover-image'] %}
+                    {% coverImage article.data['cover-image'], article.data.title %}
+                  {% endif %}
+                </article>
               </li>
             {% endfor %}
           </ul>

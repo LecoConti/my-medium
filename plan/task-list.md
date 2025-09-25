@@ -66,7 +66,12 @@ This task list maps the user stories from the backlog to concrete technical task
 
 ### Epic: Content Management System
 
-**Task R0-T004: Content Data Models**
+**Task R0-T004: Content Data Models** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added sample article front-matter template plus author, publication, and topic JSON records
+✓ Implemented `scripts/validate-content.mjs` to enforce required fields and tag structure
+✓ Documented validation usage in README and executed script successfully
+-->
 - **Stories Addressed:** R0-003, R0-005, R0-007, R0-018
 - **Sub-tasks:**
   - Design Markdown frontmatter schema for articles
@@ -77,7 +82,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T002
 - **Deliverables:** Content schemas and validation
 
-**Task R0-T005: Article Processing Pipeline**
+**Task R0-T005: Article Processing Pipeline** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Expanded `.eleventy.js` with slug management, Markdown TOC/footnotes, enhanced reading time, and version-aware metadata
+✓ Added @11ty/eleventy-img responsive shortcodes with AVIF/WebP output and updated index template/styles
+✓ Updated sample content + validation script for new schema fields and verified build + validation commands
+-->
 - **Stories Addressed:** R0-005, R0-006, R0-007, R0-009, R0-010
 - **Sub-tasks:**
   - Implement Markdown article processing with frontmatter parsing

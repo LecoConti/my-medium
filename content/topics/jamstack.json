@@ -1,0 +1,11 @@
+{
+  "id": "jamstack",
+  "name": "Jamstack",
+  "slug": "jamstack",
+  "description": "Static-first architectures and workflows for web publishing.",
+  "parent-topic": null,
+  "meta": {
+    "featured-articles": ["eleventy-jamstack-kickoff"],
+    "follower-count": 23
+  }
+}
