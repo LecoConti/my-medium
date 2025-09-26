@@ -16,6 +16,7 @@ const articleRules = {
     'updated-date',
     'excerpt',
     'cover-image',
+    'cover-image-alt',
     'reading-time',
     'tags',
     'status',
@@ -69,6 +70,18 @@ function validateArticle(filePath) {
   }
   if (!Number.isInteger(data.version) || data.version < 1) {
     errors.push(`${filePath}: version must be a positive integer`);
+  }
+  if (typeof data['cover-image'] === 'string') {
+    if (!data['cover-image'].startsWith('/assets/images/')) {
+      errors.push(`${filePath}: cover-image must live under /assets/images/`);
+    }
+    const parts = data['cover-image'].split('/').filter(Boolean);
+    if (parts.length < 4) {
+      errors.push(`${filePath}: cover-image should follow /assets/images/YYYY/MM/... structure`);
+    }
+  }
+  if (!data['cover-image-alt']) {
+    errors.push(`${filePath}: cover-image-alt is required for accessibility`);
   }
   if (data['revision-history']) {
     if (!Array.isArray(data['revision-history'])) {

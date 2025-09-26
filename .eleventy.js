@@ -12,6 +12,18 @@ import slugify from 'slugify';
 
 const projectRoot = process.cwd();
 const CONTENT_ROOT = 'content';
+const IMAGE_INPUT_DIR = 'assets/images';
+const IMAGE_OUTPUT_DIR = path.join(projectRoot, 'dist', 'assets', 'images');
+const IMAGE_URL_PATH = '/assets/images';
+const IMAGE_WIDTHS = [320, 640, 960, 1280, 1920];
+const IMAGE_FORMATS = ['avif', 'webp', 'jpeg'];
+const IMAGE_CACHE_OPTIONS = {
+  duration: '30d',
+  directory: '.cache/eleventy-img'
+};
+
+Image.concurrency = 6;
+
 const slugifyOptions = {
   lower: true,
   strict: true,
@@ -84,27 +96,157 @@ function computeReadingStats(content) {
   };
 }
 
-async function generateImageHTML(src, alt = '', sizes = '100vw', widths = [400, 800, 1200]) {
-  if (!src) return '';
-  const isRemote = /^https?:/i.test(src);
-  const normalizedSrc = isRemote ? src : path.join(projectRoot, src.replace(/^\//, ''));
-  const metadata = await Image(normalizedSrc, {
+function resolveImageSource(src) {
+  if (!src) {
+    throw new Error('Image source is required.');
+  }
+
+  if (/^https?:\/\//i.test(src)) {
+    const url = new URL(src);
+    const pathname = url.pathname || 'remote-image';
+    const name = slugifyString(path.parse(pathname).name || 'remote');
+    const outputSubdir = path.posix.join('remote', url.hostname || 'external');
+    return {
+      inputPath: src,
+      outputSubdir,
+      urlPath: `${IMAGE_URL_PATH}/${outputSubdir}`,
+      fileSlug: name
+    };
+  }
+
+  const normalizedSrc = src.startsWith('/') ? src.slice(1) : src;
+  const absolutePath = path.join(projectRoot, normalizedSrc);
+
+  if (!existsSync(absolutePath)) {
+    throw new Error(`Image not found at ${src}`);
+  }
+
+  const posixPath = normalizedSrc.replace(/\\/g, '/');
+  const relativePath = posixPath.startsWith(`${IMAGE_INPUT_DIR}/`)
+    ? posixPath.slice(`${IMAGE_INPUT_DIR}/`.length)
+    : posixPath;
+  const outputSubdir = path.posix.dirname(relativePath) === '.' ? '' : path.posix.dirname(relativePath);
+  const fileSlug = slugifyString(path.parse(relativePath).name);
+  const urlPath = outputSubdir ? `${IMAGE_URL_PATH}/${outputSubdir}` : IMAGE_URL_PATH;
+
+  return {
+    inputPath: absolutePath,
+    outputSubdir,
+    urlPath,
+    fileSlug
+  };
+}
+
+async function getImageMetadata(src, options = {}) {
+  const {
+    widths = IMAGE_WIDTHS,
+    formats = IMAGE_FORMATS,
+    outputSubdir,
+    urlPath,
+    fileSlug,
+    cacheOptions = IMAGE_CACHE_OPTIONS
+  } = options;
+
+  const source = resolveImageSource(src);
+  const finalOutputSubdir = outputSubdir ?? source.outputSubdir;
+  const finalUrlPath = urlPath ?? source.urlPath;
+  const finalSlug = fileSlug ?? source.fileSlug;
+  const outputDir = finalOutputSubdir
+    ? path.join(IMAGE_OUTPUT_DIR, finalOutputSubdir)
+    : IMAGE_OUTPUT_DIR;
+
+  const metadata = await Image(source.inputPath, {
     widths,
-    formats: ['avif', 'webp', 'jpeg'],
-    urlPath: '/assets/images/',
-    outputDir: path.join(projectRoot, 'dist', 'assets', 'images'),
+    formats,
+    outputDir,
+    urlPath: finalOutputSubdir ? `${IMAGE_URL_PATH}/${finalOutputSubdir}` : IMAGE_URL_PATH,
+    useCache: true,
+    cacheOptions,
     sharpOptions: {
       animated: true
+    },
+    sharpWebpOptions: {
+      quality: 58
+    },
+    sharpAvifOptions: {
+      quality: 45
+    },
+    sharpJpegOptions: {
+      quality: 68,
+      progressive: true,
+      chromaSubsampling: '4:4:4'
+    },
+    filenameFormat: (id, srcPath, width, format, { hash }) => {
+      const parsed = path.parse(srcPath);
+      const base = slugifyString(parsed.name || finalSlug || id);
+      return `${base}-${hash}-${width}w.${format}`;
     }
   });
 
-  return Image.generateHTML(metadata, {
+  return metadata;
+}
+
+async function generateResponsiveImage(src, options = {}) {
+  const normalized = typeof options === 'string' ? { alt: options } : { ...options };
+  const alt = (normalized.alt || '').trim();
+  if (!alt) {
+    throw new Error(`Image shortcode for ${src} requires an alt description.`);
+  }
+
+  const metadata = await getImageMetadata(src, {
+    widths: normalized.widths || IMAGE_WIDTHS,
+    formats: normalized.formats || IMAGE_FORMATS,
+    outputSubdir: normalized.outputSubdir,
+    fileSlug: normalized.fileSlug,
+    urlPath: normalized.urlPath
+  });
+
+  const sizes = normalized.sizes || '100vw';
+  const imgClass = normalized.class || normalized.imgClass || '';
+  const figureClass = normalized.figureClass || '';
+  const loading = normalized.loading || 'lazy';
+  const decoding = normalized.decoding || 'async';
+  const fetchpriority = normalized.fetchpriority;
+
+  const imageAttributes = {
     alt,
     sizes,
-    loading: 'lazy',
-    decoding: 'async'
+    loading,
+    decoding
+  };
+  if (imgClass) {
+    imageAttributes.class = imgClass;
+  }
+  if (fetchpriority) {
+    imageAttributes.fetchpriority = fetchpriority;
+  }
+
+  const html = Image.generateHTML(metadata, imageAttributes, {
+    whitespaceMode: 'inline'
   });
+
+  const caption = normalized.caption;
+  const credit = normalized.credit;
+  const figure = normalized.figure ?? Boolean(caption || credit);
+
+  if (!figure) {
+    return html;
+  }
+
+  const captionParts = [];
+  if (caption) {
+    captionParts.push(`<span class="caption">${caption}</span>`);
+  }
+  if (credit) {
+    captionParts.push(`<span class="credit">${credit}</span>`);
+  }
+  const figcaption = captionParts.length ? `<figcaption>${captionParts.join(' · ')}</figcaption>` : '';
+  const figureClassAttr = figureClass ? ` class="${figureClass}"` : '';
+
+  return `<figure${figureClassAttr}>${html}${figcaption}</figure>`;
 }
+
+let cachedArticles = null;
 
 function loadMarkdownArticles() {
   const baseDir = path.join(CONTENT_ROOT, 'articles');
@@ -178,20 +320,19 @@ function buildTagIndex(articles) {
   articles.forEach((article) => {
     const tags = Array.isArray(article.data.tags) ? article.data.tags : [];
     tags.forEach((tag) => {
-      if (!tagMap.has(tag)) {
-        tagMap.set(tag, []);
+      const normalized = slugifyString(tag);
+      if (!tagMap.has(normalized)) {
+        tagMap.set(normalized, {
+          tag,
+          slug: normalized,
+          items: []
+        });
       }
-      tagMap.get(tag).push(article);
+      tagMap.get(normalized).items.push(article);
     });
   });
-  return Array.from(tagMap.entries()).map(([tag, items]) => ({
-    tag,
-    slug: slugifyString(tag),
-    items
-  }));
+  return Array.from(tagMap.values());
 }
-
-let cachedArticles = null;
 
 function getArticles() {
   if (!cachedArticles) {
@@ -202,8 +343,9 @@ function getArticles() {
 
 export default function (eleventyConfig) {
   eleventyConfig.addWatchTarget(CONTENT_ROOT);
-  eleventyConfig.addWatchTarget('assets/images');
-  eleventyConfig.addPassthroughCopy({ assets: 'assets' });
+  eleventyConfig.addWatchTarget(path.join('assets', 'images'));
+  eleventyConfig.addWatchTarget(path.join('assets', 'styles'));
+  eleventyConfig.addPassthroughCopy({ 'assets/styles': 'assets/styles' });
   eleventyConfig.setLibrary('md', md);
 
   eleventyConfig.on('beforeBuild', () => {
@@ -236,17 +378,45 @@ export default function (eleventyConfig) {
     return computeReadingStats(String(value));
   });
 
-  eleventyConfig.addAsyncShortcode('image', generateImageHTML);
-  eleventyConfig.addAsyncShortcode('coverImage', (src, alt = '', sizes = '(max-width: 960px) 100vw, 960px') =>
-    generateImageHTML(src, alt, sizes, [640, 960, 1440])
-  );
-  eleventyConfig.addNunjucksAsyncShortcode('image', generateImageHTML);
-  eleventyConfig.addNunjucksAsyncShortcode('coverImage', (src, alt = '', sizes = '(max-width: 960px) 100vw, 960px') =>
-    generateImageHTML(src, alt, sizes, [640, 960, 1440])
-  );
+  eleventyConfig.addAsyncShortcode('image', (src, options) => {
+    const normalized = typeof options === 'string' ? { alt: options } : { ...(options || {}) };
+    return generateResponsiveImage(src, {
+      ...normalized,
+      figure: normalized.figure ?? Boolean(normalized.caption || normalized.credit)
+    });
+  });
+  eleventyConfig.addNunjucksAsyncShortcode('image', (src, options) => {
+    const normalized = typeof options === 'string' ? { alt: options } : { ...(options || {}) };
+    return generateResponsiveImage(src, {
+      ...normalized,
+      figure: normalized.figure ?? Boolean(normalized.caption || normalized.credit)
+    });
+  });
+
+  eleventyConfig.addAsyncShortcode('coverImage', (src, options = {}) => {
+    const normalized = typeof options === 'string' ? { alt: options } : { ...options };
+    return generateResponsiveImage(src, {
+      ...normalized,
+      widths: normalized.widths || [640, 960, 1280, 1920],
+      sizes: normalized.sizes || '(max-width: 960px) 100vw, 960px',
+      class: normalized.class || 'cover-image',
+      figure: normalized.figure ?? Boolean(normalized.caption || normalized.credit),
+      figureClass: normalized.figureClass || 'cover-image-figure'
+    });
+  });
+  eleventyConfig.addNunjucksAsyncShortcode('coverImage', (src, options = {}) => {
+    const normalized = typeof options === 'string' ? { alt: options } : { ...options };
+    return generateResponsiveImage(src, {
+      ...normalized,
+      widths: normalized.widths || [640, 960, 1280, 1920],
+      sizes: normalized.sizes || '(max-width: 960px) 100vw, 960px',
+      class: normalized.class || 'cover-image',
+      figure: normalized.figure ?? Boolean(normalized.caption || normalized.credit),
+      figureClass: normalized.figureClass || 'cover-image-figure'
+    });
+  });
 
   eleventyConfig.addCollection('articles', () => getArticles());
-
   eleventyConfig.addCollection('authors', () => loadJsonCollection('authors'));
   eleventyConfig.addCollection('publications', () => loadJsonCollection('publications'));
   eleventyConfig.addCollection('topics', () => loadJsonCollection('topics'));

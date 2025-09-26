@@ -99,7 +99,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T004
 - **Deliverables:** Complete article processing system
 
-**Task R0-T006: Asset Management**
+**Task R0-T006: Asset Management** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Extended `@11ty/eleventy-img` pipeline with AVIF/WebP/JPEG, hashed filenames, caching, and responsive breakpoints
+✓ Added organized `/assets/images/YYYY/MM/` source structure, cover/inline shortcodes, and article sample usage
+✓ Documented asset workflow, updated validation for cover metadata, and verified build + validation commands
+-->
 - **Stories Addressed:** R0-006, R0-007, R0-012
 - **Sub-tasks:**
   - Setup image optimization pipeline with 11ty-img

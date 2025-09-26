@@ -6,7 +6,9 @@ publication: "ai-strategy"
 date-published: "2025-09-01T12:00:00-03:00"
 updated-date: "2025-09-15T09:00:00-03:00"
 excerpt: "How we bootstrap a static-first Medium replacement with Eleventy and Netlify."
-cover-image: "/assets/images/eleventy-kickoff.png"
+cover-image: "/assets/images/2025/09/eleventy-kickoff.png"
+cover-image-alt: "Team planning session standing around a kanban board"
+cover-image-credit: "Photo by Internal Media Lab"
 reading-time: 4
 tags:
   - jamstack
@@ -26,3 +28,13 @@ revision-history:
 ---
 
 Launching a publishing platform begins with a disciplined static architecture...
+
+{% image "/assets/images/2025/09/eleventy-architecture.png", {
+  alt: "Diagram showing Eleventy ingesting content and outputting static pages",
+  caption: "Eleventy compiles Markdown, data files, and templates into a single deployable bundle.",
+  credit: "Architecture Guild",
+  sizes: "(max-width: 720px) 95vw, 720px",
+  figureClass: "article-figure"
+} %}
+
+Further iterations will expand the content model and search experience.

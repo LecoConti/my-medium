@@ -29,7 +29,12 @@
                     </div>
                   </header>
                   {% if article.data['cover-image'] %}
-                    {% coverImage article.data['cover-image'], article.data.title %}
+                    {% coverImage article.data['cover-image'], {
+                      alt: article.data['cover-image-alt'] or article.data.title,
+                      caption: article.data['cover-image-caption'],
+                      credit: article.data['cover-image-credit'],
+                      figureClass: 'cover-image-frame'
+                    } %}
                   {% endif %}
                 </article>
               </li>
