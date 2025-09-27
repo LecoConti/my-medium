@@ -1,0 +1,25 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.tags
+  size: 1
+  alias: tag
+permalink: "tags/{{ tag.slug }}/"
+eleventyComputed:
+  title: "{{ tag.tag }}"
+  description: "Stories tagged {{ tag.tag }}"
+---
+{% from "components/article-card.njk" import articleCard %}
+<section class="tag-hub">
+  <header class="tag-hub__header">
+    <h1>#{{ tag.tag }}</h1>
+    <p>{{ tag.items | length }} article{{ 's' if tag.items | length != 1 }} filed under this tag.</p>
+  </header>
+  <div class="feed__grid">
+    {% for article in tag.items %}
+      {% set author = collections.authors | selectattr('data.handle', 'equalto', article.data['author-handle']) | first %}
+      {% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
+      {{ articleCard(article, author, publication) | safe }}
+    {% endfor %}
+  </div>
+</section>

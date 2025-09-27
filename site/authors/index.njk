@@ -1,0 +1,29 @@
+---
+layout: layouts/base.njk
+title: Authors
+description: "Meet the contributors behind the My Medium Prototype."
+permalink: "/authors/"
+---
+<section class="authors-directory">
+  <header class="authors-directory__header">
+    <h1>Authors</h1>
+    <p>Profiles of everyone publishing on the platform.</p>
+  </header>
+  {% if collections.authors | length %}
+    <ul class="authors-directory__list">
+      {% for author in collections.authors %}
+        {% set handle = author.data.handle or author.id %}
+        <li class="authors-directory__item">
+          <a href="/authors/{{ handle }}/">
+            <strong>{{ author.data.name or author.id }}</strong>
+            {% if author.data.bio %}
+              <span>{{ author.data.bio }}</span>
+            {% endif %}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No authors yet.</p>
+  {% endif %}
+</section>

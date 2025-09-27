@@ -1,0 +1,33 @@
+{% from "../components/navigation.njk" import navigation %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    {% set pageTitle = title | default(site.name) %}
+    <title>{{ pageTitle }} · {{ site.name }}</title>
+    <meta name="description" content="{{ description | default(site.description) }}" />
+    <link rel="stylesheet" href="/assets/styles/main.css" />
+    {% block head %}{% endblock %}
+  </head>
+  <body class="{{ bodyClass | default('') }}">
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <div class="page-shell">
+      <header class="site-header" role="banner">
+        <div class="site-brand">
+          <a class="site-logo" href="/">{{ site.name }}</a>
+          <p class="site-tagline">{{ site.description }}</p>
+        </div>
+        {{ navigation(site.navigation, page.url or '/') | safe }}
+      </header>
+      <main id="main" class="site-main" role="main">
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="site-footer" role="contentinfo">
+        <p>© {% currentYear %} {{ site.name }}. Built with Eleventy.</p>
+      </footer>
+    </div>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.articles
+  size: 1
+  alias: article
+permalink: "articles/{{ article.slug }}/"
+eleventyComputed:
+  title: "{{ article.data.title }}"
+  description: "{{ article.data.excerpt | safe }}"
+---
+{% from "components/author-byline.njk" import authorByline %}
+{% from "components/tag-list.njk" import tagList %}
+{% set author = collections.authors | selectattr('data.handle', 'equalto', article.data['author-handle']) | first %}
+{% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
+<article class="article-reader">
+  <header class="article-reader__header">
+    <p class="article-reader__meta">
+      <span>{{ article.data['date-published'] | readableDate('en-US') }}</span>
+      <span>• {{ article.data['reading-meta'].text }}</span>
+      <span>• v{{ article.data.version }}</span>
+    </p>
+    <h1 class="article-reader__title">{{ article.data.title }}</h1>
+    {{ authorByline(author, publication) | safe }}
+    {% if article.data['cover-image'] %}
+      <div class="article-reader__cover">
+        {% coverImage article.data['cover-image'], {
+          alt: article.data['cover-image-alt'] or article.data.title,
+          caption: null,
+          credit: article.data['cover-image-credit'],
+          figure: false,
+          class: 'article-reader__cover-image',
+          fetchpriority: 'high'
+        } %}
+      </div>
+    {% endif %}
+    {{ tagList(article.data.tags) | safe }}
+  </header>
+  <div class="article-reader__content">
+    {{ article.content | markdown | safe }}
+  </div>
+  <footer class="article-reader__footer">
+    <p>Updated {{ article.data['updated-date'] | readableDate('en-US') }}.</p>
+  </footer>
+</article>

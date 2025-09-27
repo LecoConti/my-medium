@@ -1,62 +1,23 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>My Medium Prototype</title>
-    <link rel="stylesheet" href="/assets/styles/main.css" />
-  </head>
-  <body>
-    <header>
-      <h1>My Medium Prototype</h1>
-      <p>Static-first publishing demo powered by Eleventy.</p>
-    </header>
-
-    <main>
-      <section>
-        <h2>Articles</h2>
-        {% if collections.articles.length %}
-          <ul>
-            {% for article in collections.articles %}
-              <li>
-                <strong>{{ article.data.title or article.id }}</strong>
-                <div>
-                  <span>{{ article.data.publishedAt | readableDate('en-US') }}</span>
-                  <span>· {{ article.content | readingTime }}</span>
-                </div>
-              </li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>No articles published yet. Add Markdown files under <code>content/articles/</code>.</p>
-        {% endif %}
-      </section>
-
-      <section>
-        <h2>Authors</h2>
-        {% if collections.authors.length %}
-          <ul>
-            {% for author in collections.authors %}
-              <li>{{ author.data.name or author.id }}</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>Add author profiles under <code>content/authors/</code>.</p>
-        {% endif %}
-      </section>
-
-      <section>
-        <h2>Tags</h2>
-        {% if collections.tags.length %}
-          <ul>
-            {% for tag in collections.tags %}
-              <li>{{ tag.tag }} ({{ tag.items.length }})</li>
-            {% endfor %}
-          </ul>
-        {% else %}
-          <p>Tags populate automatically from article front-matter.</p>
-        {% endif %}
-      </section>
-    </main>
-  </body>
-</html>
+---
+layout: layouts/base.njk
+title: Home
+description: "Latest thinking from the My Medium Prototype team."
+---
+{% from "components/article-card.njk" import articleCard %}
+<section class="feed">
+  <header class="feed__header">
+    <h1 class="feed__title">Latest Articles</h1>
+    <p class="feed__subtitle">Fresh perspectives from the team.</p>
+  </header>
+  {% if collections.articles | length %}
+    <div class="feed__grid">
+      {% for article in collections.articles %}
+        {% set author = collections.authors | selectattr('data.handle', 'equalto', article.data['author-handle']) | first %}
+        {% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
+        {{ articleCard(article, author, publication) | safe }}
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>No articles published yet. Add Markdown files under <code>content/articles/</code>.</p>
+  {% endif %}
+</section>

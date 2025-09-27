@@ -1,0 +1,12 @@
+{% macro tagList(tags = []) %}
+  {% if tags and tags | length %}
+    <ul class="tag-list" aria-label="Article tags">
+      {% for tag in tags %}
+        {% set tagSlug = tag | slugify %}
+        <li class="tag-list__item">
+          <a class="tag-list__link" href="/tags/{{ tagSlug }}/">#{{ tag }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endmacro %}

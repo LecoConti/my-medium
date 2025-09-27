@@ -1,0 +1,12 @@
+{% macro authorByline(author, publication) %}
+  {% if author %}
+    {% set handle = author.data.handle or author.id %}
+    <div class="author-byline">
+      <span class="author-byline__label">By</span>
+      <a class="author-byline__name" href="/authors/{{ handle }}/">{{ author.data.name or author.id }}</a>
+      {% if publication %}
+        <span class="author-byline__publication">in {{ publication.data.name }}</span>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endmacro %}

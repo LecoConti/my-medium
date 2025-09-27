@@ -1,0 +1,9 @@
+{
+  "name": "My Medium Prototype",
+  "description": "Static-first publishing prototype for internal storytelling.",
+  "navigation": [
+    { "label": "Home", "url": "/" },
+    { "label": "Authors", "url": "/authors/" },
+    { "label": "Tags", "url": "/tags/" }
+  ]
+}
