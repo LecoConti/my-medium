@@ -1,0 +1,17 @@
+{% macro bookmarkButton(payload, options = {}) %}
+  {% set context = options.context or 'card' %}
+  {% set title = payload.title | default('') %}
+  {% set buttonClass = 'bookmark-button' ~ (' bookmark-button--' ~ context) %}
+  <button
+    type="button"
+    class="{{ buttonClass }}"
+    data-bookmark-button
+    data-bookmark-context="{{ context }}"
+    data-bookmark='{{ payload | dump | safe }}'
+    aria-pressed="false"
+    aria-label="Save to bookmarks"
+  >
+    <span class="bookmark-button__icon" aria-hidden="true">★</span>
+    <span class="bookmark-button__label" data-bookmark-label>Save</span>
+  </button>
+{% endmacro %}

@@ -1,5 +1,6 @@
 {% from "../components/navigation.njk" import navigation %}
 {% from "../components/search-form.njk" import searchForm %}
+{% from "../components/bookmark-indicator.njk" import bookmarkIndicator %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,6 +28,7 @@
           </div>
           <div class="site-header__actions">
             {{ searchForm({ id: 'site-header-search', compact: true, showHint: false }) | safe }}
+            {{ bookmarkIndicator() | safe }}
             <button
               type="button"
               class="site-nav__toggle"
@@ -55,6 +57,7 @@
       </footer>
     </div>
     {% block scripts %}
+      <script src="/assets/scripts/bookmarks.js" defer></script>
       <script>
         (() => {
           const body = document.body;

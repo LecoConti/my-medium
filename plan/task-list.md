@@ -170,7 +170,12 @@ This task list maps the user stories from the backlog to concrete technical task
 
 ### Epic: Static Interactivity
 
-**Task R0-T010: Client-Side Features**
+**Task R0-T010: Client-Side Features** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added localStorage bookmark manager, indicator, floating actions, and keyboard shortcuts
+✓ Built bookmarks page with filter/sort, JSON import/export, and integrated sharing buttons
+✓ Updated article cards and templates with bookmark/share UI and responsive styling
+-->
 - **Stories Addressed:** R0-020, R0-023 (partial)
 - **Sub-tasks:**
   - Implement bookmarking with localStorage persistence

@@ -1,7 +1,31 @@
 {% from "components/author-byline.njk" import authorByline %}
 {% from "components/tag-list.njk" import tagList %}
+{% from "components/bookmark-button.njk" import bookmarkButton %}
 {% macro articleCard(article, author, publication) %}
-  <article class="article-card">
+{% set shareText = (article.data.excerpt or article.data.title) | striptags %}
+  {% set payload = {
+    id: article.slug,
+    title: article.data.title,
+    url: article.data.url,
+    excerpt: article.data.excerpt,
+    author: author.data.name or author.id,
+    tags: article.data.tags
+  } %}
+  <article class="article-card" data-bookmark-target>
+    <header class="article-card__header">
+      {{ bookmarkButton(payload, { context: 'card' }) | safe }}
+      <button
+        type="button"
+        class="icon-button"
+        data-share-button="copy"
+        data-share-url="{{ article.data.url }}"
+        data-share-title="{{ article.data.title }}"
+        data-share-text="{{ shareText }}"
+        aria-label="Copy link to {{ article.data.title }}"
+      >
+        <span aria-hidden="true">⧉</span>
+      </button>
+    </header>
     <a class="article-card__link" href="{{ article.data.url }}">
       {% if article.data['cover-image'] %}
         <div class="article-card__media">

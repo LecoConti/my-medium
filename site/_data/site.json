@@ -4,6 +4,7 @@
   "navigation": [
     { "label": "Home", "url": "/" },
     { "label": "Authors", "url": "/authors/" },
-    { "label": "Tags", "url": "/tags/" }
+    { "label": "Tags", "url": "/tags/" },
+    { "label": "Bookmarks", "url": "/bookmarks/" }
   ]
 }

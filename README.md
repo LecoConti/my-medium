@@ -44,6 +44,12 @@ Refer to `AGENTS.md` for detailed contribution guidelines and to `prd-spec/` for
 - Set the production site to use Node.js 18 and enable automatic HTTPS; the config already applies CSP and security headers.
 - After connecting the GitHub repository in Netlify, trigger a deploy preview to confirm redirects and headers are active.
 
+## Client Features
+
+- Bookmarks persist in the browser’s `localStorage` and surface on `/bookmarks/`.
+- Keyboard shortcuts: press `B` on an article to toggle its bookmark, `Ctrl/⌘ + K` jumps to the search field.
+- Share buttons provide copy-to-clipboard, Twitter, LinkedIn and email integration on article pages.
+
 ## Images & Assets
 
 - Store source images under `/assets/images/YYYY/MM/` (UTC-based) to keep the repository organized.

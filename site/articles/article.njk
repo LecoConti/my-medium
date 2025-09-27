@@ -11,8 +11,18 @@ eleventyComputed:
 ---
 {% from "components/author-byline.njk" import authorByline %}
 {% from "components/tag-list.njk" import tagList %}
+{% from "components/bookmark-button.njk" import bookmarkButton %}
 {% set author = collections.authors | selectattr('data.handle', 'equalto', article.data['author-handle']) | first %}
 {% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
+{% set shareText = (article.data.excerpt or article.data.title) | striptags %}
+{% set bookmarkPayload = {
+  id: article.slug,
+  title: article.data.title,
+  url: article.data.url,
+  excerpt: article.data.excerpt,
+  author: author.data.name or author.id,
+  tags: article.data.tags
+} %}
 <article class="article-reader">
   <header class="article-reader__header">
     <p class="article-reader__meta">
@@ -21,6 +31,55 @@ eleventyComputed:
       <span>• v{{ article.data.version }}</span>
     </p>
     <h1 class="article-reader__title">{{ article.data.title }}</h1>
+    <div class="article-reader__actions">
+      {{ bookmarkButton(bookmarkPayload, { context: 'article' }) | safe }}
+      <div class="article-share" data-share-container>
+        <button
+          type="button"
+          class="icon-button"
+          data-share-button="copy"
+          data-share-url="{{ article.data.url }}"
+          data-share-title="{{ article.data.title }}"
+          data-share-text="{{ shareText }}"
+        >
+          <span aria-hidden="true">⧉</span>
+          <span>Copy link</span>
+        </button>
+        <button
+          type="button"
+          class="icon-button"
+          data-share-button="twitter"
+          data-share-url="{{ article.data.url }}"
+          data-share-title="{{ article.data.title }}"
+          data-share-text="{{ shareText }}"
+        >
+          <span aria-hidden="true">𝕏</span>
+          <span>Tweet</span>
+        </button>
+        <button
+          type="button"
+          class="icon-button"
+          data-share-button="linkedin"
+          data-share-url="{{ article.data.url }}"
+          data-share-title="{{ article.data.title }}"
+          data-share-text="{{ shareText }}"
+        >
+          <span aria-hidden="true">in</span>
+          <span>Share</span>
+        </button>
+        <button
+          type="button"
+          class="icon-button"
+          data-share-button="email"
+          data-share-url="{{ article.data.url }}"
+          data-share-title="{{ article.data.title }}"
+          data-share-text="{{ shareText }}"
+        >
+          <span aria-hidden="true">✉</span>
+          <span>Email</span>
+        </button>
+      </div>
+    </div>
     {{ authorByline(author, publication) | safe }}
     {% if article.data['cover-image'] %}
       <div class="article-reader__cover">
@@ -43,3 +102,25 @@ eleventyComputed:
     <p>Updated {{ article.data['updated-date'] | readableDate('en-US') }}.</p>
   </footer>
 </article>
+<div class="floating-actions is-hidden" data-floating-actions>
+  <button
+    type="button"
+    class="bookmark-button bookmark-button--floating"
+    data-bookmark-button
+    data-bookmark-context="article"
+    data-bookmark='{{ bookmarkPayload | dump | safe }}'
+  >
+    <span class="bookmark-button__icon" aria-hidden="true">★</span>
+    <span class="bookmark-button__label" data-bookmark-label>Save</span>
+  </button>
+  <button
+    type="button"
+    class="icon-button"
+    data-share-button="copy"
+    data-share-url="{{ article.data.url }}"
+    data-share-title="{{ article.data.title }}"
+    data-share-text="{{ shareText }}"
+  >
+    <span aria-hidden="true">⧉</span>
+  </button>
+</div>

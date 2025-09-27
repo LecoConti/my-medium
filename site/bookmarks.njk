@@ -1,0 +1,34 @@
+---
+layout: layouts/base.njk
+title: Bookmarks
+description: "Your saved articles and authors."
+permalink: /bookmarks/
+---
+<section class="bookmarks-page" data-bookmarks-page>
+  <header class="bookmarks-page__header">
+    <h1>Bookmarks</h1>
+    <p>Quick access to everything you have saved on My Medium Prototype.</p>
+  </header>
+  <div class="bookmarks-page__controls">
+    <input
+      type="search"
+      placeholder="Search saved items"
+      aria-label="Filter bookmarks"
+      data-bookmarks-search
+    />
+    <select data-bookmarks-sort aria-label="Sort bookmarks">
+      <option value="recent">Newest first</option>
+      <option value="title">Title A → Z</option>
+      <option value="author">Author</option>
+    </select>
+    <div class="bookmarks-page__actions">
+      <button type="button" class="button button--ghost" data-bookmarks-export>Export JSON</button>
+      <button type="button" class="button" data-bookmarks-import>Import</button>
+      <input type="file" accept="application/json" data-bookmarks-file hidden />
+    </div>
+  </div>
+  <div class="bookmarks-page__empty empty-state" data-bookmarks-empty hidden>
+    <p>You have no bookmarks yet. Save an article or author to see it here.</p>
+  </div>
+  <div class="bookmarks-page__list" data-bookmarks-list></div>
+</section>

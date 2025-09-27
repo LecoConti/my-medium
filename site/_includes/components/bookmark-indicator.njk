@@ -1,0 +1,11 @@
+{% macro bookmarkIndicator() %}
+  <a
+    class="bookmark-indicator"
+    href="/bookmarks/"
+    data-bookmark-indicator
+    aria-label="View saved bookmarks"
+  >
+    <span class="bookmark-indicator__icon" aria-hidden="true">★</span>
+    <span class="bookmark-indicator__count" data-bookmark-count>0</span>
+  </a>
+{% endmacro %}
