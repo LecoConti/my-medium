@@ -46,7 +46,9 @@
         {{ navigation(site.navigation, page.url or '/', 'site-navigation', '') | safe }}
       </header>
       <main id="main" class="site-main" role="main">
-        {% block content %}{% endblock %}
+        {% block content %}
+          {{ content | safe }}
+        {% endblock %}
       </main>
       <footer class="site-footer" role="contentinfo">
         <p>© {% currentYear %} {{ site.name }}. Built with Eleventy.</p>
