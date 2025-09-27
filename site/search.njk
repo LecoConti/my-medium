@@ -33,6 +33,10 @@ permalink: /search/
       const queryNode = container.querySelector('[data-search-query]');
       const pluralNode = container.querySelector('[data-search-plural]');
       const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
+      const setLoading = (state) => {
+        if (!loadingIndicator) return;
+        loadingIndicator.hidden = state ? false : true;
+      };
       const params = new URLSearchParams(window.location.search);
       if (input && params.get('q')) {
         input.value = params.get('q');
@@ -167,7 +171,7 @@ permalink: /search/
           list.innerHTML = '';
           return;
         }
-        loadingIndicator?.setAttribute('hidden', '');
+        setLoading(false);
         const terms = query.split(/\s+/u).filter(Boolean);
         const matches = mini.search(query, {
           prefix: true,
@@ -185,7 +189,7 @@ permalink: /search/
         });
         meta.hidden = false;
         empty.hidden = matches.length !== 0;
-        loadingIndicator?.setAttribute('hidden', '');
+        setLoading(false);
         renderResults(matches, query);
         updateAnalytics(query);
         updateUrl(query);
@@ -207,7 +211,7 @@ permalink: /search/
             fields: ['title', 'subtitle', 'content', 'tags', 'author'],
             storeFields: ['title', 'subtitle', 'type', 'url', 'tags', 'author']
           });
-          loadingIndicator?.setAttribute('hidden', '');
+          setLoading(false);
           if (input && input.value.trim()) {
             performSearch(input.value.trim());
           }
@@ -217,6 +221,7 @@ permalink: /search/
           alert.className = 'alert';
           alert.textContent = 'Search is unavailable at the moment. Please try again later.';
           list.replaceWith(alert);
+          setLoading(false);
         } finally {
           loading = false;
         }
@@ -226,6 +231,7 @@ permalink: /search/
         form.addEventListener('submit', (event) => {
           event.preventDefault();
           debouncedSearch.cancel?.();
+          setLoading(true);
           performSearch(input.value.trim());
         });
 
@@ -237,8 +243,10 @@ permalink: /search/
             list.innerHTML = '';
             updateUrl('');
             if (pagination) pagination.hidden = true;
+            setLoading(false);
             return;
           }
+          setLoading(true);
           debouncedSearch(value);
         });
 
@@ -249,6 +257,7 @@ permalink: /search/
           list.innerHTML = '';
           updateUrl('');
           if (pagination) pagination.hidden = true;
+          setLoading(false);
           input.focus();
         });
       }
@@ -269,6 +278,8 @@ permalink: /search/
       loadIndex().then(() => {
         if (form && input && input.value.trim()) {
           performSearch(input.value.trim());
+        } else {
+          setLoading(false);
         }
       });
     });
