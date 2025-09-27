@@ -32,7 +32,7 @@ permalink: /search/
       const countNode = container.querySelector('[data-search-count]');
       const queryNode = container.querySelector('[data-search-query]');
       const pluralNode = container.querySelector('[data-search-plural]');
-      const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
+      const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator span');
       const setLoading = (state) => {
         if (!loadingIndicator) return;
         if (state) {
