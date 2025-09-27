@@ -3,6 +3,9 @@ layout: layouts/base.njk
 title: Search
 description: "Find articles, authors, and topics across the publication."
 permalink: /search/
+scripts:
+  - /assets/vendor/minisearch.js
+  - /assets/scripts/search.js
 ---
 {% from "components/search-form.njk" import searchForm %}
 {% from "components/search-results.njk" import searchResults %}
@@ -14,9 +17,3 @@ permalink: /search/
   {{ searchForm({ id: 'search-page-input', initial: '', showHint: true }) | safe }}
   {{ searchResults({ loading: true, query: '' }) | safe }}
 </section>
-
-{% block scripts %}
-  {{ super() }}
-  <script src="/assets/vendor/minisearch.js" defer></script>
-  <script src="/assets/scripts/search.js" defer></script>
-{% endblock %}

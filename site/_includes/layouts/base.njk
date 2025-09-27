@@ -132,6 +132,11 @@
           });
         })();
       </script>
+      {% if page.scripts %}
+        {% for script in page.scripts %}
+          <script src="{{ script }}" defer></script>
+        {% endfor %}
+      {% endif %}
     {% endblock %}
   </body>
 </html>
