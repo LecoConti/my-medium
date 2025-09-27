@@ -35,7 +35,11 @@ permalink: /search/
       const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
       const setLoading = (state) => {
         if (!loadingIndicator) return;
-        loadingIndicator.hidden = state ? false : true;
+        if (state) {
+          loadingIndicator.hidden = false;
+        } else {
+          loadingIndicator.hidden = true;
+        }
       };
       const params = new URLSearchParams(window.location.search);
       if (input && params.get('q')) {
