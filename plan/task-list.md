@@ -136,7 +136,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T007
 - **Deliverables:** Mobile-responsive interface
 
-**Task R0-T009: Client-Side Search Implementation** **[IN PROGRESS by @codex - 2025-09-25]**
+**Task R0-T009: Client-Side Search Implementation** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added MiniSearch-powered index builder, Eleventy search data output, and build script automation
+✓ Created search page with debounced results, highlighting, pagination, keyboard shortcut, and analytics tracking
+✓ Integrated header search form, responsive styles, and ensured index size budgets via csso/minification
+-->
 - **Stories Addressed:** R0-017
 - **Sub-tasks:**
   - Create build-time search indexer script (/scripts/build-index.mjs)
