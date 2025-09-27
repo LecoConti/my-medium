@@ -1,0 +1,51 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.authors
+  size: 1
+  alias: author
+permalink: "authors/{{ (author.data.handle or author.id) }}/"
+eleventyComputed:
+  title: "{{ author.data.name or author.id }}"
+  description: "Articles and profile for {{ author.data.name or author.id }}"
+---
+{% from "components/article-card.njk" import articleCard %}
+{% set handle = author.data.handle or author.id %}
+<section class="author-profile">
+  <header class="author-profile__header">
+    <h1 class="author-profile__name">{{ author.data.name or author.id }}</h1>
+    {% if author.data.bio %}
+      <p class="author-profile__bio">{{ author.data.bio }}</p>
+    {% endif %}
+    <dl class="author-profile__links">
+      {% if author.data['social-links'] %}
+        {% for label, url in author.data['social-links'] %}
+          <div class="author-profile__link">
+            <dt>{{ label | title }}</dt>
+            <dd><a href="{{ url }}">{{ url }}</a></dd>
+          </div>
+        {% endfor %}
+      {% endif %}
+      {% if author.data.settings and author.data.settings['contact-info'] and author.data.settings['contact-info'].email %}
+        <div class="author-profile__link">
+          <dt>Email</dt>
+          <dd><a href="mailto:{{ author.data.settings['contact-info'].email }}">{{ author.data.settings['contact-info'].email }}</a></dd>
+        </div>
+      {% endif %}
+    </dl>
+  </header>
+  {% set authored = collections.articles | selectattr('data.author-handle', 'equalto', handle) %}
+  <section class="author-profile__articles">
+    <h2>Articles by {{ author.data.name or author.id }}</h2>
+    {% if authored | length %}
+      <div class="feed__grid">
+        {% for article in authored %}
+          {% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
+          {{ articleCard(article, author, publication) | safe }}
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>No articles yet.</p>
+    {% endif %}
+  </section>
+</section>

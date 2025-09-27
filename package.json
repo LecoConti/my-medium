@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx @11ty/eleventy --serve",
-    "build": "npx @11ty/eleventy",
+    "build": "npx @11ty/eleventy && node scripts/build-index.mjs",
     "lint": "eslint .",
     "format": "prettier --write .",
     "test": "npm run lint"
@@ -24,6 +24,7 @@
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",
     "@11ty/eleventy-img": "^5.0.0",
+    "csso": "^5.0.5",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.2.0",

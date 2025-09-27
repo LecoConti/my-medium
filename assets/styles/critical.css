@@ -1,0 +1,103 @@
+:root {
+  color-scheme: light;
+  --font-sans: "Inter", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --color-text: #0b1727;
+  --color-muted: #5b6570;
+  --color-accent: #0f7ae5;
+  --color-surface: #ffffff;
+  --max-width: 72rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #f7f9fc;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+.page-shell {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+.site-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.site-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.site-tagline {
+  margin: 0.25rem 0 0;
+  color: var(--color-muted);
+  font-size: 0.95rem;
+}
+
+.site-nav__toggle {
+  border: none;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 0.75rem;
+  box-shadow: 0 6px 18px rgba(11, 23, 39, 0.1);
+}
+
+.site-nav__toggle-icon {
+  width: 1.25rem;
+  height: 1rem;
+  display: grid;
+  align-content: space-between;
+}
+
+.site-nav__toggle-icon span {
+  display: block;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.site-nav {
+  display: block;
+}
+
+.site-nav__list {
+  display: flex;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+.site-nav__link {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.625rem;
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.site-nav__link.is-active {
+  background: rgba(15, 122, 229, 0.12);
+  color: var(--color-accent);
+}
+*** End Patch

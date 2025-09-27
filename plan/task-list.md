@@ -117,7 +117,12 @@ This task list maps the user stories from the backlog to concrete technical task
 
 ### Epic: User Interface Development
 
-**Task R0-T007: Layout System & Templates**
+**Task R0-T007: Layout System & Templates** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added base HTML5 layout with navigation component and site metadata integration
+✓ Built article card/byline/tag components plus home, article, author, and tag templates
+✓ Introduced fluid typography system, responsive CSS, and verified Eleventy builds
+-->
 - **Stories Addressed:** R0-012, R0-015, R0-016, R0-017, R0-018
 - **Sub-tasks:**
   - Create base layout template with header, footer, navigation
@@ -129,7 +134,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T005
 - **Deliverables:** Complete template system
 
-**Task R0-T008: Responsive Design & Styling**
+**Task R0-T008: Responsive Design & Styling** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Expanded CSS variables, fluid typography, and breakpoint system across 320px–1920px
+✓ Added mobile navigation toggle with progressive enhancement, skeleton states, and error page styling
+✓ Inline critical CSS, minify styles via csso, and verified Eleventy build performance
+-->
 - **Stories Addressed:** R0-012, R0-013, R0-014, R0-015
 - **Sub-tasks:**
   - Implement CSS-only responsive design (no frameworks)
@@ -141,7 +151,12 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T007
 - **Deliverables:** Mobile-responsive interface
 
-**Task R0-T009: Client-Side Search Implementation**
+**Task R0-T009: Client-Side Search Implementation** **[UNDER REVIEW by @codex - 2025-09-25, completed 2025-09-25]**
+<!-- IMPLEMENTATION COMPLETE:
+✓ Added MiniSearch-powered index builder, Eleventy search data output, and build script automation
+✓ Created search page with debounced results, highlighting, pagination, keyboard shortcut, and analytics tracking
+✓ Integrated header search form, responsive styles, and ensured index size budgets via csso/minification
+-->
 - **Stories Addressed:** R0-017
 - **Sub-tasks:**
   - Create build-time search indexer script (/scripts/build-index.mjs)

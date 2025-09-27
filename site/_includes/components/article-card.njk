@@ -1,0 +1,32 @@
+{% from "components/author-byline.njk" import authorByline %}
+{% from "components/tag-list.njk" import tagList %}
+{% macro articleCard(article, author, publication) %}
+  <article class="article-card">
+    <a class="article-card__link" href="{{ article.data.url }}">
+      {% if article.data['cover-image'] %}
+        <div class="article-card__media">
+          {% coverImage article.data['cover-image'], {
+            alt: article.data['cover-image-alt'] or article.data.title,
+            caption: null,
+            credit: article.data['cover-image-credit'],
+            figure: false,
+            class: 'article-card__image'
+          } %}
+        </div>
+      {% endif %}
+      <div class="article-card__body">
+        <h3 class="article-card__title">{{ article.data.title }}</h3>
+        {% if article.data.excerpt %}
+          <p class="article-card__excerpt">{{ article.data.excerpt }}</p>
+        {% endif %}
+        <div class="article-card__meta">
+          <span>{{ article.data['date-published'] | readableDate('en-US') }}</span>
+          <span>• {{ article.readingTime.text }}</span>
+          <span>• v{{ article.data.version }}</span>
+        </div>
+        {{ authorByline(author, publication) | safe }}
+        {{ tagList(article.data.tags) | safe }}
+      </div>
+    </a>
+  </article>
+{% endmacro %}

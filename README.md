@@ -17,9 +17,13 @@ Static-first publishing prototype built with Eleventy and Minisearch to support 
    ```bash
    npm run build
    ```
-5. Verify content schemas remain valid:
+5. Validate content schemas:
    ```bash
    node scripts/validate-content.mjs
+   ```
+6. Regenerate the search index when content changes outside `npm run build`:
+   ```bash
+   node scripts/build-index.mjs
    ```
 
 ## Project Layout

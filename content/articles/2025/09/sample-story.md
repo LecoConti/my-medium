@@ -9,6 +9,7 @@ excerpt: "How we bootstrap a static-first Medium replacement with Eleventy and N
 cover-image: "/assets/images/2025/09/eleventy-kickoff.png"
 cover-image-alt: "Team planning session standing around a kanban board"
 cover-image-credit: "Photo by Internal Media Lab"
+cover-image-caption: "Kickoff workshop at the downtown studio"
 reading-time: 4
 tags:
   - jamstack
@@ -27,7 +28,7 @@ revision-history:
     notes: "Added cover image and updated metrics"
 ---
 
-Launching a publishing platform begins with a disciplined static architecture...
+Launching a publishing platform begins with a disciplined static architecture. By anchoring the stack around Eleventy and Netlify, we keep build costs predictable while giving editors instant preview feedback.
 
 {% image "/assets/images/2025/09/eleventy-architecture.png", {
   alt: "Diagram showing Eleventy ingesting content and outputting static pages",
@@ -37,4 +38,4 @@ Launching a publishing platform begins with a disciplined static architecture...
   figureClass: "article-figure"
 } %}
 
-Further iterations will expand the content model and search experience.
+Further iterations will expand the content model and search experience while keeping runtime infrastructure lightweight.

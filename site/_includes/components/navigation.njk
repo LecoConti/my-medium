@@ -1,0 +1,23 @@
+{% macro navigation(items = [], currentUrl = '/', id = 'site-navigation', extraClass = '') %}
+  {% set current = currentUrl or '/' %}
+  {% set classes = 'site-nav' %}
+  {% if extraClass %}
+    {% set classes = classes + ' ' + extraClass %}
+  {% endif %}
+<nav id="{{ id }}" class="{{ classes }}" aria-label="Primary" data-collapsible>
+  <ul class="site-nav__list">
+    {% for item in items %}
+      {% set isActive = current == item.url or (item.url != '/' and current != '/' and current.startsWith(item.url)) %}
+      <li class="site-nav__item">
+        <a
+          href="{{ item.url }}"
+          class="site-nav__link{{ ' is-active' if isActive }}"
+          {% if isActive %}aria-current="page"{% endif %}
+        >
+          {{ item.label }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endmacro %}

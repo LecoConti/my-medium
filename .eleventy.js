@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
@@ -9,6 +9,8 @@ import markdownItFootnote from 'markdown-it-footnote';
 import markdownItToc from 'markdown-it-toc-done-right';
 import Image from '@11ty/eleventy-img';
 import slugify from 'slugify';
+import { minify as minifyCss } from 'csso';
+import MiniSearch from 'minisearch';
 
 const projectRoot = process.cwd();
 const CONTENT_ROOT = 'content';
@@ -287,7 +289,8 @@ function loadMarkdownArticles() {
           'revision-history': revisionHistory,
           publishedAt: publishedDate,
           url: parsed.data.url || `/articles/${slug}/`,
-          'reading-meta': readingStats
+          'reading-meta': readingStats,
+          'author-name': parsed.data['author-name'] || parsed.data.author || parsed.data['author-handle'] || ''
         },
         content: parsed.content,
         filePath,
@@ -341,11 +344,99 @@ function getArticles() {
   return cachedArticles;
 }
 
+function getSearchData(articles, authors, topics) {
+  return {
+    articles: articles.map((article) => ({
+      slug: article.slug,
+      title: article.data.title,
+      excerpt: article.data.excerpt || '',
+      content: article.content,
+      tags: Array.isArray(article.data.tags) ? article.data.tags : [],
+      author: article.data['author-name'] || article.data.author || '',
+      url: article.data.url
+    })),
+    authors: authors.map((author) => ({
+      id: author.id,
+      handle: author.data.handle || author.id,
+      name: author.data.name || author.id,
+      bio: author.data.bio || '',
+      interests: Array.isArray(author.data.interests) ? author.data.interests : []
+    })),
+    topics: topics.map((topic) => ({
+      id: topic.id,
+      slug: topic.data.slug || topic.id,
+      name: topic.data.name || topic.id,
+      description: topic.data.description || '',
+      related: Array.isArray(topic.data.related) ? topic.data.related : []
+    }))
+  };
+}
+
+function buildSearchIndex(data) {
+  const documents = [];
+
+  data.articles.forEach((article) => {
+    documents.push({
+      id: `article:${article.slug}`,
+      type: 'article',
+      title: article.title,
+      subtitle: article.excerpt,
+      content: article.content,
+      tags: article.tags.join(' '),
+      author: article.author,
+      url: article.url
+    });
+  });
+
+  data.authors.forEach((author) => {
+    documents.push({
+      id: `author:${author.id}`,
+      type: 'author',
+      title: author.name,
+      subtitle: author.bio,
+      content: author.bio,
+      tags: author.interests.join(' '),
+      author: author.name,
+      url: `/authors/${author.handle}/`
+    });
+  });
+
+  data.topics.forEach((topic) => {
+    documents.push({
+      id: `topic:${topic.id}`,
+      type: 'topic',
+      title: topic.name,
+      subtitle: topic.description,
+      content: topic.description,
+      tags: topic.related.join(' '),
+      author: '',
+      url: `/tags/${topic.slug}/`
+    });
+  });
+
+  const miniSearch = new MiniSearch({
+    fields: ['title', 'subtitle', 'content', 'tags', 'author'],
+    storeFields: ['title', 'subtitle', 'type', 'url', 'tags', 'author'],
+    searchOptions: {
+      boost: { title: 3, subtitle: 2, content: 1 },
+      fuzzy: 0.2,
+      prefix: true
+    }
+  });
+
+  miniSearch.addAll(documents);
+  return {
+    index: miniSearch.toJSON(),
+    docs: documents
+  };
+}
+
 export default function (eleventyConfig) {
   eleventyConfig.addWatchTarget(CONTENT_ROOT);
   eleventyConfig.addWatchTarget(path.join('assets', 'images'));
   eleventyConfig.addWatchTarget(path.join('assets', 'styles'));
-  eleventyConfig.addPassthroughCopy({ 'assets/styles': 'assets/styles' });
+  eleventyConfig.addPassthroughCopy({ assets: 'assets' });
+  eleventyConfig.addPassthroughCopy({ 'node_modules/minisearch/dist/minisearch.umd.js': 'assets/vendor/minisearch.js' });
   eleventyConfig.setLibrary('md', md);
 
   eleventyConfig.on('beforeBuild', () => {
@@ -369,13 +460,30 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addFilter('readingTime', (value) => {
     if (!value) return '';
-    const stats = computeReadingStats(String(value));
-    return stats.text;
+    return readingTime(String(value)).text;
   });
 
   eleventyConfig.addFilter('readingStats', (value) => {
     if (!value) return {};
     return computeReadingStats(String(value));
+  });
+
+  eleventyConfig.addFilter('markdown', (value) => {
+    if (!value) return '';
+    return md.render(String(value));
+  });
+
+  eleventyConfig.addFilter('cssmin', (code) => {
+    if (!code) return '';
+    return minifyCss(String(code)).css;
+  });
+
+  eleventyConfig.addFilter('readFile', (filePath) => {
+    if (!filePath) return '';
+    const normalized = filePath.startsWith('/') ? filePath.slice(1) : filePath;
+    const absolute = path.join(process.cwd(), normalized);
+    if (!existsSync(absolute)) return '';
+    return readFileSync(absolute, 'utf8');
   });
 
   eleventyConfig.addAsyncShortcode('image', (src, options) => {
@@ -416,11 +524,27 @@ export default function (eleventyConfig) {
     });
   });
 
+  eleventyConfig.addShortcode('currentYear', () => String(new Date().getFullYear()));
+
   eleventyConfig.addCollection('articles', () => getArticles());
   eleventyConfig.addCollection('authors', () => loadJsonCollection('authors'));
   eleventyConfig.addCollection('publications', () => loadJsonCollection('publications'));
   eleventyConfig.addCollection('topics', () => loadJsonCollection('topics'));
   eleventyConfig.addCollection('tags', () => buildTagIndex(getArticles()));
+
+  eleventyConfig.addCollection('search', () => {
+    const articles = getArticles();
+    const authors = loadJsonCollection('authors');
+    const topics = loadJsonCollection('topics');
+    const searchData = getSearchData(articles, authors, topics);
+    const searchPayload = buildSearchIndex(searchData);
+    const outputDir = path.join(process.cwd(), 'dist');
+    mkdirSync(outputDir, { recursive: true });
+    writeFileSync(path.join(outputDir, 'search-data.json'), JSON.stringify(searchData));
+    writeFileSync(path.join(outputDir, 'search-index.json'), JSON.stringify(searchPayload.index));
+    writeFileSync(path.join(outputDir, 'search-docs.json'), JSON.stringify(searchPayload.docs));
+    return searchPayload;
+  });
 
   return {
     dir: {

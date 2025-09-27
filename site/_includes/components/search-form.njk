@@ -1,0 +1,36 @@
+{% macro searchForm(options = {}) %}
+  {% set id = options.id or 'site-search' %}
+  {% set action = options.action or '/search/' %}
+  {% set method = options.method or 'get' %}
+  {% set placeholder = options.placeholder or 'Search articles, authors, topics...' %}
+  {% set initial = options.initial or '' %}
+  {% set showHint = options.showHint if options.showHint is defined else true %}
+  {% set compact = options.compact or false %}
+  <form
+    class="search-form{{ ' search-form--compact' if compact }}"
+    role="search"
+    action="{{ action }}"
+    method="{{ method }}"
+    data-search-form
+  >
+    <label class="search-form__label" for="{{ id }}">Search</label>
+    <div class="search-form__field">
+      <input
+        id="{{ id }}"
+        name="q"
+        type="search"
+        placeholder="{{ placeholder }}"
+        value="{{ initial }}"
+        autocomplete="off"
+        aria-label="Search site"
+        data-search-input
+      />
+      <button type="reset" class="search-form__clear" data-search-clear aria-label="Clear search">
+        <span aria-hidden="true">×</span>
+      </button>
+    </div>
+    {% if showHint %}
+      <p class="search-form__hint">Press <kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>K</kbd> to open search</p>
+    {% endif %}
+  </form>
+{% endmacro %}
