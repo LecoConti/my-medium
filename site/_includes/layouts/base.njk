@@ -13,8 +13,7 @@
     {% set criticalStyles = '/assets/styles/critical.css' | readFile | cssmin %}
     <style>{{ criticalStyles | safe }}</style>
     <link rel="preload" href="/assets/styles/main.css" as="style" />
-    <link rel="stylesheet" href="/assets/styles/main.css" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="/assets/styles/main.css" /></noscript>
+    <link rel="stylesheet" href="/assets/styles/main.css" />
     {% block head %}{% endblock %}
   </head>
   <body class="{{ bodyClass | default('') }}">
