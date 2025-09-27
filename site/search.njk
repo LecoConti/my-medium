@@ -32,14 +32,10 @@ permalink: /search/
       const countNode = container.querySelector('[data-search-count]');
       const queryNode = container.querySelector('[data-search-query]');
       const pluralNode = container.querySelector('[data-search-plural]');
-      const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator span');
+      const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
       const setLoading = (state) => {
         if (!loadingIndicator) return;
-        if (state) {
-          loadingIndicator.hidden = false;
-        } else {
-          loadingIndicator.hidden = true;
-        }
+        loadingIndicator.toggleAttribute('hidden', !state);
       };
       const params = new URLSearchParams(window.location.search);
       if (input && params.get('q')) {
