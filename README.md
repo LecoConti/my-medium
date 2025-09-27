@@ -43,3 +43,22 @@ Refer to `AGENTS.md` for detailed contribution guidelines and to `prd-spec/` for
 - Netlify deploys run `npm run build` and publish `dist/` as configured in `netlify.toml`.
 - Set the production site to use Node.js 18 and enable automatic HTTPS; the config already applies CSP and security headers.
 - After connecting the GitHub repository in Netlify, trigger a deploy preview to confirm redirects and headers are active.
+
+## Images & Assets
+
+- Store source images under `/assets/images/YYYY/MM/` (UTC-based) to keep the repository organized.
+- Use the Eleventy shortcodes for optimized output:
+  ```njk
+  {% coverImage "/assets/images/2025/09/eleventy-kickoff.png", {
+    alt: "Team planning session",
+    caption: "Launch week stand-up",
+    credit: "Internal Media Lab"
+  } %}
+
+  {% image "/assets/images/2025/09/eleventy-architecture.png", {
+    alt: "Architecture diagram",
+    caption: "Eleventy build flow",
+    sizes: "(max-width: 720px) 95vw, 720px"
+  } %}
+  ```
+- All generated responsive variants are emitted to `dist/assets/images/` with hashed filenames and lazy-loading enabled.

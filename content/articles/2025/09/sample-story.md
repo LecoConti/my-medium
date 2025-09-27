@@ -32,9 +32,10 @@ Launching a publishing platform begins with a disciplined static architecture. B
 
 {% image "/assets/images/2025/09/eleventy-architecture.png", {
   alt: "Diagram showing Eleventy ingesting content and outputting static pages",
-  caption: "Eleventy compiles Markdown, data files, and templates into one deployable bundle.",
+  caption: "Eleventy compiles Markdown, data files, and templates into a single deployable bundle.",
   credit: "Architecture Guild",
-  sizes: "(max-width: 720px) 95vw, 720px"
+  sizes: "(max-width: 720px) 95vw, 720px",
+  figureClass: "article-figure"
 } %}
 
 Further iterations will expand the content model and search experience while keeping runtime infrastructure lightweight.
