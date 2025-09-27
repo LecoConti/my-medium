@@ -1,7 +1,11 @@
 (function () {
+  const DEFAULT_PAGE_SIZE = 10;
+  const ANALYTICS_KEY = 'search-stats';
+  const DEBOUNCE_DELAY = 300;
+
   const bootstrap = () => {
-    const MiniSearch = window.MiniSearch;
-    if (!MiniSearch) {
+    const SearchEngine = window.MiniSearch;
+    if (!SearchEngine) {
       window.setTimeout(bootstrap, 50);
       return;
     }
@@ -23,6 +27,7 @@
     const nextBtn = container.querySelector('[data-search-next]');
     const pageLabel = container.querySelector('[data-search-page]');
     const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
+
     const params = new URLSearchParams(window.location.search);
     if (input && params.get('q')) {
       input.value = params.get('q');
@@ -35,18 +40,15 @@
 
     let docs = [];
     let mini = null;
-    let loading = false;
     let allResults = [];
     let currentQuery = '';
     let currentPage = 1;
-    const pageSize = 10;
-    const analyticsKey = 'search-stats';
 
-    const debounce = (fn, delay = 300) => {
+    const debounce = (fn, delay = DEBOUNCE_DELAY) => {
       let timer = null;
       const debounced = (...args) => {
         clearTimeout(timer);
-        timer = setTimeout(() => fn(...args), delay);
+        timer = window.setTimeout(() => fn(...args), delay);
       };
       debounced.cancel = () => clearTimeout(timer);
       return debounced;
@@ -55,11 +57,11 @@
     const updateAnalytics = (query) => {
       if (!query) return;
       try {
-        const raw = window.localStorage.getItem(analyticsKey);
+        const raw = window.localStorage.getItem(ANALYTICS_KEY);
         const stats = raw ? JSON.parse(raw) : { total: 0, queries: {} };
         stats.total += 1;
         stats.queries[query] = (stats.queries[query] || 0) + 1;
-        window.localStorage.setItem(analyticsKey, JSON.stringify(stats));
+        window.localStorage.setItem(ANALYTICS_KEY, JSON.stringify(stats));
       } catch (error) {
         console.warn('Search analytics unavailable', error);
       }
@@ -90,6 +92,7 @@
         li.className = 'search-results__item';
         const article = document.createElement('article');
         article.className = `search-result search-result--${result.type}`;
+
         const header = document.createElement('header');
         header.className = 'search-result__header';
         const type = document.createElement('p');
@@ -100,12 +103,14 @@
         title.innerHTML = result.title;
         header.append(type, title);
         article.append(header);
+
         if (result.subtitle) {
           const excerpt = document.createElement('p');
           excerpt.className = 'search-result__excerpt';
           excerpt.innerHTML = result.subtitle;
           article.append(excerpt);
         }
+
         const footer = document.createElement('footer');
         footer.className = 'search-result__meta';
         if (result.author) {
@@ -119,11 +124,13 @@
           footer.append(span);
         }
         article.append(footer);
+
         const link = document.createElement('a');
         link.className = 'search-result__link';
         link.href = result.url;
         link.setAttribute('aria-label', `View ${result.title.replace(/<[^>]+>/g, '')}`);
         article.append(link);
+
         li.append(article);
         list.append(li);
       });
@@ -131,16 +138,16 @@
 
     const renderPage = () => {
       const total = allResults.length;
-      const totalPages = Math.max(1, Math.ceil(total / pageSize));
-      const start = (currentPage - 1) * pageSize;
-      const pageResults = allResults.slice(start, start + pageSize);
+      const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PAGE_SIZE));
+      const start = (currentPage - 1) * DEFAULT_PAGE_SIZE;
+      const pageResults = allResults.slice(start, start + DEFAULT_PAGE_SIZE);
       if (queryNode) queryNode.textContent = currentQuery;
       if (countNode) countNode.textContent = total;
       if (pluralNode) pluralNode.toggleAttribute('hidden', total === 1 || total === 0);
       if (meta) meta.hidden = !currentQuery;
       if (empty) empty.hidden = total !== 0 || !currentQuery;
       if (pagination) {
-        pagination.hidden = total <= pageSize;
+        pagination.hidden = total <= DEFAULT_PAGE_SIZE;
         if (prevBtn) prevBtn.disabled = currentPage === 1;
         if (nextBtn) nextBtn.disabled = currentPage === totalPages;
         if (pageLabel) pageLabel.textContent = `Page ${currentPage} of ${totalPages}`;
@@ -169,7 +176,7 @@
         fuzzy: 0.2,
         combineWith: 'AND'
       }).map((result) => {
-        const doc = docs.find((doc) => doc.id === result.id) || {};
+        const doc = docs.find((candidate) => candidate.id === result.id) || {};
         return {
           ...result,
           title: highlightText(result.title || doc.title || '', terms),
@@ -262,7 +269,7 @@
     });
 
     nextBtn?.addEventListener('click', () => {
-      const totalPages = Math.max(1, Math.ceil(allResults.length / pageSize));
+      const totalPages = Math.max(1, Math.ceil(allResults.length / DEFAULT_PAGE_SIZE));
       if (currentPage >= totalPages) return;
       currentPage += 1;
       renderPage();
