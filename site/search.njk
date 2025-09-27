@@ -183,6 +183,9 @@ permalink: /search/
             author: doc.author || result.author
           };
         });
+        meta.hidden = false;
+        empty.hidden = matches.length !== 0;
+        loadingIndicator?.setAttribute('hidden', '');
         renderResults(matches, query);
         updateAnalytics(query);
         updateUrl(query);
