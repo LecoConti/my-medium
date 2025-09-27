@@ -65,6 +65,18 @@
           const toggle = document.querySelector('[data-nav-toggle]');
           if (!nav || !toggle) return;
           body.classList.add('nav-enhanced');
+          const mq = window.matchMedia('(min-width: 60rem)');
+          const updateToggleVisibility = () => {
+            const hide = mq.matches;
+            toggle.hidden = hide;
+            toggle.setAttribute('aria-hidden', hide ? 'true' : 'false');
+            if (hide) {
+              nav.classList.remove('is-open');
+              body.classList.remove('nav-open');
+              toggle.setAttribute('aria-expanded', 'false');
+            }
+          };
+          updateToggleVisibility();
           const closeNav = () => {
             nav.classList.remove('is-open');
             body.classList.remove('nav-open');
@@ -80,13 +92,7 @@
               closeNav();
             }
           });
-          window.matchMedia('(min-width: 60rem)').addEventListener('change', (event) => {
-            if (event.matches) {
-              nav.classList.remove('is-open');
-              body.classList.remove('nav-open');
-              toggle.setAttribute('aria-expanded', 'false');
-            }
-          });
+          mq.addEventListener('change', updateToggleVisibility);
         })();
 
         (() => {
