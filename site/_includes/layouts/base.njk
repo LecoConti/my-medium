@@ -8,18 +8,38 @@
     {% set pageTitle = title | default(site.name) %}
     <title>{{ pageTitle }} · {{ site.name }}</title>
     <meta name="description" content="{{ description | default(site.description) }}" />
-    <link rel="stylesheet" href="/assets/styles/main.css" />
+    {% set criticalStyles = '/assets/styles/critical.css' | readFile | cssmin %}
+    <style>{{ criticalStyles | safe }}</style>
+    <link rel="preload" href="/assets/styles/main.css" as="style" />
+    <link rel="stylesheet" href="/assets/styles/main.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="/assets/styles/main.css" /></noscript>
     {% block head %}{% endblock %}
   </head>
   <body class="{{ bodyClass | default('') }}">
     <a href="#main" class="skip-link">Skip to main content</a>
     <div class="page-shell">
       <header class="site-header" role="banner">
-        <div class="site-brand">
-          <a class="site-logo" href="/">{{ site.name }}</a>
-          <p class="site-tagline">{{ site.description }}</p>
+        <div class="site-header__top">
+          <div class="site-brand">
+            <a class="site-logo" href="/">{{ site.name }}</a>
+            <p class="site-tagline">{{ site.description }}</p>
+          </div>
+          <button
+            type="button"
+            class="site-nav__toggle"
+            data-nav-toggle
+            aria-controls="site-navigation"
+            aria-expanded="false"
+          >
+            <span class="site-nav__toggle-icon" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </span>
+            <span class="site-nav__toggle-label">Menu</span>
+          </button>
         </div>
-        {{ navigation(site.navigation, page.url or '/') | safe }}
+        {{ navigation(site.navigation, page.url or '/', 'site-navigation', '') | safe }}
       </header>
       <main id="main" class="site-main" role="main">
         {% block content %}{% endblock %}
@@ -28,6 +48,38 @@
         <p>© {% currentYear %} {{ site.name }}. Built with Eleventy.</p>
       </footer>
     </div>
-    {% block scripts %}{% endblock %}
+    {% block scripts %}
+      <script>
+        (() => {
+          const body = document.body;
+          const nav = document.getElementById('site-navigation');
+          const toggle = document.querySelector('[data-nav-toggle]');
+          if (!nav || !toggle) return;
+          body.classList.add('nav-enhanced');
+          const closeNav = () => {
+            nav.classList.remove('is-open');
+            body.classList.remove('nav-open');
+            toggle.setAttribute('aria-expanded', 'false');
+          };
+          toggle.addEventListener('click', () => {
+            const opened = nav.classList.toggle('is-open');
+            body.classList.toggle('nav-open', opened);
+            toggle.setAttribute('aria-expanded', opened ? 'true' : 'false');
+          });
+          nav.addEventListener('click', (event) => {
+            if (event.target.closest('a')) {
+              closeNav();
+            }
+          });
+          window.matchMedia('(min-width: 60rem)').addEventListener('change', (event) => {
+            if (event.matches) {
+              nav.classList.remove('is-open');
+              body.classList.remove('nav-open');
+              toggle.setAttribute('aria-expanded', 'false');
+            }
+          });
+        })();
+      </script>
+    {% endblock %}
   </body>
 </html>

@@ -6,6 +6,7 @@ import MarkdownIt from 'markdown-it';
 import markdownItAnchor from 'markdown-it-anchor';
 import markdownItPrism from 'markdown-it-prism';
 import slugify from 'slugify';
+import { minify as minifyCss } from 'csso';
 
 const CONTENT_ROOT = 'content';
 
@@ -196,6 +197,19 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter('markdown', (value) => {
     if (!value) return '';
     return md.render(String(value));
+  });
+
+  eleventyConfig.addFilter('cssmin', (code) => {
+    if (!code) return '';
+    return minifyCss(String(code)).css;
+  });
+
+  eleventyConfig.addFilter('readFile', (filePath) => {
+    if (!filePath) return '';
+    const normalized = filePath.startsWith('/') ? filePath.slice(1) : filePath;
+    const absolute = path.join(process.cwd(), normalized);
+    if (!existsSync(absolute)) return '';
+    return readFileSync(absolute, 'utf8');
   });
 
   eleventyConfig.addShortcode('image', (src, options) => imageMarkup(src, options));

@@ -23,13 +23,14 @@
   },
   "dependencies": {
     "@11ty/eleventy": "^3.1.2",
+    "csso": "^5.0.5",
     "gray-matter": "^4.0.3",
     "markdown-it": "^14.1.0",
     "markdown-it-anchor": "^9.2.0",
     "markdown-it-prism": "^3.0.0",
-    "slugify": "^1.6.6",
     "minisearch": "^7.2.0",
-    "reading-time": "^1.5.0"
+    "reading-time": "^1.5.0",
+    "slugify": "^1.6.6"
   },
   "devDependencies": {
     "eslint": "^9.36.0",

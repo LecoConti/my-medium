@@ -18,6 +18,18 @@ description: "Latest thinking from the My Medium Prototype team."
       {% endfor %}
     </div>
   {% else %}
-    <p>No articles published yet. Add Markdown files under <code>content/articles/</code>.</p>
+    <div class="feed__empty">
+      <p>No articles published yet. Add Markdown files under <code>content/articles/</code>.</p>
+      <div class="skeleton-grid" aria-hidden="true">
+        {% for i in [1, 2] %}
+          <div class="skeleton-card">
+            <div class="skeleton skeleton--media"></div>
+            <div class="skeleton skeleton--title"></div>
+            <div class="skeleton skeleton--text"></div>
+            <div class="skeleton skeleton--text skeleton--text-short"></div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 </section>
