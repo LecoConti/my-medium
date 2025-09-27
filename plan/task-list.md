@@ -136,7 +136,7 @@ This task list maps the user stories from the backlog to concrete technical task
 - **Dependencies:** R0-T007
 - **Deliverables:** Mobile-responsive interface
 
-**Task R0-T009: Client-Side Search Implementation**
+**Task R0-T009: Client-Side Search Implementation** **[IN PROGRESS by @codex - 2025-09-25]**
 - **Stories Addressed:** R0-017
 - **Sub-tasks:**
   - Create build-time search indexer script (/scripts/build-index.mjs)

@@ -1,4 +1,5 @@
 {% from "../components/navigation.njk" import navigation %}
+{% from "../components/search-form.njk" import searchForm %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -24,20 +25,23 @@
             <a class="site-logo" href="/">{{ site.name }}</a>
             <p class="site-tagline">{{ site.description }}</p>
           </div>
-          <button
-            type="button"
-            class="site-nav__toggle"
-            data-nav-toggle
-            aria-controls="site-navigation"
-            aria-expanded="false"
-          >
-            <span class="site-nav__toggle-icon" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </span>
-            <span class="site-nav__toggle-label">Menu</span>
-          </button>
+          <div class="site-header__actions">
+            {{ searchForm({ id: 'site-header-search', compact: true, showHint: false }) | safe }}
+            <button
+              type="button"
+              class="site-nav__toggle"
+              data-nav-toggle
+              aria-controls="site-navigation"
+              aria-expanded="false"
+            >
+              <span class="site-nav__toggle-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+              <span class="site-nav__toggle-label">Menu</span>
+            </button>
+          </div>
         </div>
         {{ navigation(site.navigation, page.url or '/', 'site-navigation', '') | safe }}
       </header>
@@ -76,6 +80,44 @@
               nav.classList.remove('is-open');
               body.classList.remove('nav-open');
               toggle.setAttribute('aria-expanded', 'false');
+            }
+          });
+        })();
+
+        (() => {
+          const headerForm = document.querySelector('.site-header [data-search-form]');
+          if (!headerForm) return;
+          const headerInput = headerForm.querySelector('[data-search-input]');
+          const clearBtn = headerForm.querySelector('[data-search-clear]');
+
+          headerForm.addEventListener('submit', (event) => {
+            const query = headerInput?.value.trim();
+            if (!query) {
+              event.preventDefault();
+              return;
+            }
+            if (window.location.pathname !== '/search/') {
+              event.preventDefault();
+              window.location.href = `/search/?q=${encodeURIComponent(query)}`;
+            }
+          });
+
+          clearBtn?.addEventListener('click', () => {
+            if (!headerInput) return;
+            headerInput.value = '';
+            headerInput.focus();
+          });
+
+          document.addEventListener('keydown', (event) => {
+            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+              event.preventDefault();
+              if (window.location.pathname === '/search/' && document.querySelector('.search-page [data-search-input]')) {
+                document.querySelector('.search-page [data-search-input]').focus();
+              } else if (headerInput) {
+                headerInput.focus();
+              } else {
+                window.location.href = '/search/';
+              }
             }
           });
         })();

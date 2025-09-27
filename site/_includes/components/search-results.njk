@@ -1,0 +1,47 @@
+{% macro searchResults(options = {}) %}
+  {% set results = options.results or [] %}
+  {% set loading = options.loading or false %}
+  {% set query = options.query or '' %}
+  <section class="search-results" data-search-results>
+    {% if loading %}
+      <div class="loading-indicator" role="status">
+        <span>Loading results…</span>
+      </div>
+    {% endif %}
+    <div class="search-results__meta" data-search-meta hidden>
+      <p><strong data-search-count>0</strong> result<span data-search-plural hidden>s</span> for “<span data-search-query>{{ query }}</span>”</p>
+    </div>
+    <ul class="search-results__list" data-search-list>
+      {% for result in results %}
+        <li class="search-results__item">
+          <article class="search-result search-result--{{ result.type }}">
+            <header class="search-result__header">
+              <p class="search-result__type">{{ result.type | capitalize }}</p>
+              <h2 class="search-result__title">{{ result.title | safe }}</h2>
+            </header>
+            {% if result.subtitle %}
+              <p class="search-result__excerpt">{{ result.subtitle | safe }}</p>
+            {% endif %}
+            <footer class="search-result__meta">
+              {% if result.author %}
+                <span>{{ result.author }}</span>
+              {% endif %}
+              {% if result.tags %}
+                <span>#{{ result.tags }}</span>
+              {% endif %}
+            </footer>
+            <a class="search-result__link" href="{{ result.url }}" aria-label="View {{ result.title | striptags }}"></a>
+          </article>
+        </li>
+      {% endfor %}
+    </ul>
+    <div class="search-results__empty empty-state" data-search-empty hidden>
+      <p>No matches yet. Try another keyword or explore the latest stories.</p>
+    </div>
+    <nav class="search-results__pagination" data-search-pagination hidden aria-label="Search results pagination">
+      <button type="button" class="button button--ghost" data-search-prev disabled>Previous</button>
+      <span class="search-results__page" data-search-page>Page 1</span>
+      <button type="button" class="button button--ghost" data-search-next disabled>Next</button>
+    </nav>
+  </section>
+{% endmacro %}

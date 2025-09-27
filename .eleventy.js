@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync, writeFileSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
@@ -7,6 +7,7 @@ import markdownItAnchor from 'markdown-it-anchor';
 import markdownItPrism from 'markdown-it-prism';
 import slugify from 'slugify';
 import { minify as minifyCss } from 'csso';
+import MiniSearch from 'minisearch';
 
 const CONTENT_ROOT = 'content';
 
@@ -169,9 +170,97 @@ function imageMarkup(src, options = {}) {
   return `<figure${figureClass}>${img}<figcaption>${captionParts.join(' · ')}</figcaption></figure>`;
 }
 
+function getSearchData(articles, authors, topics) {
+  return {
+    articles: articles.map((article) => ({
+      slug: article.slug,
+      title: article.data.title,
+      excerpt: article.data.excerpt || '',
+      content: article.content,
+      tags: article.data.tags,
+      author: article.data['author-name'] || article.data.author || '',
+      url: article.data.url
+    })),
+    authors: authors.map((author) => ({
+      id: author.id,
+      handle: author.data.handle || author.id,
+      name: author.data.name || author.id,
+      bio: author.data.bio || '',
+      interests: Array.isArray(author.data.interests) ? author.data.interests : []
+    })),
+    topics: topics.map((topic) => ({
+      id: topic.id,
+      slug: topic.data.slug || topic.id,
+      name: topic.data.name || topic.id,
+      description: topic.data.description || '',
+      related: Array.isArray(topic.data.related) ? topic.data.related : []
+    }))
+  };
+}
+
+function buildSearchIndex(data) {
+  const documents = [];
+
+  data.articles.forEach((article) => {
+    documents.push({
+      id: `article:${article.slug}`,
+      type: 'article',
+      title: article.title,
+      subtitle: article.excerpt,
+      content: article.content,
+      tags: article.tags.join(' '),
+      author: article.author,
+      url: article.url
+    });
+  });
+
+  data.authors.forEach((author) => {
+    documents.push({
+      id: `author:${author.id}`,
+      type: 'author',
+      title: author.name,
+      subtitle: author.bio,
+      content: author.bio,
+      tags: author.interests.join(' '),
+      author: author.name,
+      url: `/authors/${author.handle}/`
+    });
+  });
+
+  data.topics.forEach((topic) => {
+    documents.push({
+      id: `topic:${topic.id}`,
+      type: 'topic',
+      title: topic.name,
+      subtitle: topic.description,
+      content: topic.description,
+      tags: topic.related.join(' '),
+      author: '',
+      url: `/tags/${topic.slug}/`
+    });
+  });
+
+  const miniSearch = new MiniSearch({
+    fields: ['title', 'subtitle', 'content', 'tags', 'author'],
+    storeFields: ['title', 'subtitle', 'type', 'url', 'tags', 'author'],
+    searchOptions: {
+      boost: { title: 3, subtitle: 2, content: 1 },
+      fuzzy: 0.2,
+      prefix: true
+    }
+  });
+
+  miniSearch.addAll(documents);
+  return {
+    index: miniSearch.toJSON(),
+    docs: documents
+  };
+}
+
 export default function (eleventyConfig) {
   eleventyConfig.addWatchTarget(CONTENT_ROOT);
   eleventyConfig.addPassthroughCopy({ assets: 'assets' });
+  eleventyConfig.addPassthroughCopy({ 'node_modules/minisearch/dist/minisearch.umd.js': 'assets/vendor/minisearch.js' });
   eleventyConfig.setLibrary('md', md);
 
   eleventyConfig.addFilter('readableDate', (value, locale = 'en-US', options = {}) => {
@@ -244,6 +333,20 @@ export default function (eleventyConfig) {
   });
 
   eleventyConfig.addCollection('topics', () => loadJsonCollection('topics'));
+
+  eleventyConfig.addCollection('search', () => {
+    const articles = loadMarkdownCollection('articles');
+    const authors = loadJsonCollection('authors');
+    const topics = loadJsonCollection('topics');
+    const searchData = getSearchData(articles, authors, topics);
+    const searchPayload = buildSearchIndex(searchData);
+    const outputDir = path.join(process.cwd(), 'dist');
+    mkdirSync(outputDir, { recursive: true });
+    writeFileSync(path.join(outputDir, 'search-data.json'), JSON.stringify(searchData));
+    writeFileSync(path.join(outputDir, 'search-index.json'), JSON.stringify(searchPayload.index));
+    writeFileSync(path.join(outputDir, 'search-docs.json'), JSON.stringify(searchPayload.docs));
+    return searchPayload;
+  });
 
   return {
     dir: {
