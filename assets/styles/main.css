@@ -471,10 +471,11 @@ img {
   position: relative;
 }
 
-.article-card__image img {
+.article-card__image {
   width: 100%;
   aspect-ratio: 16 / 10;
   object-fit: cover;
+  display: block;
 }
 
 .article-card__body {

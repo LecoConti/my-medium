@@ -1,56 +1,55 @@
 {% from "components/author-byline.njk" import authorByline %}
 {% from "components/tag-list.njk" import tagList %}
 {% from "components/bookmark-button.njk" import bookmarkButton %}
-{% macro articleCard(article, author, publication) %}
 {% set shareText = (article.data.excerpt or article.data.title) | striptags %}
-  {% set payload = {
-    id: article.slug,
-    title: article.data.title,
-    url: article.data.url,
-    excerpt: article.data.excerpt,
-    author: author.data.name or author.id,
-    tags: article.data.tags
-  } %}
-  <article class="article-card" data-bookmark-target>
-    <header class="article-card__header">
-      {{ bookmarkButton(payload, { context: 'card' }) | safe }}
-      <button
-        type="button"
-        class="icon-button"
-        data-share-button="copy"
-        data-share-url="{{ article.data.url }}"
-        data-share-title="{{ article.data.title }}"
-        data-share-text="{{ shareText }}"
-        aria-label="Copy link to {{ article.data.title }}"
-      >
-        <span aria-hidden="true">⧉</span>
-      </button>
-    </header>
-    <a class="article-card__link" href="{{ article.data.url }}">
-      {% if article.data['cover-image'] %}
-        <div class="article-card__media">
-          <img
-            src="{{ article.data['cover-image'] }}"
-            alt="{{ article.data['cover-image-alt'] or article.data.title }}"
-            class="article-card__image"
-            loading="lazy"
-            decoding="async"
-          />
-        </div>
-      {% endif %}
-      <div class="article-card__body">
-        <h3 class="article-card__title">{{ article.data.title }}</h3>
-        {% if article.data.excerpt %}
-          <p class="article-card__excerpt">{{ article.data.excerpt }}</p>
-        {% endif %}
-        <div class="article-card__meta">
-          <span>{{ article.data['date-published'] | readableDate('en-US') }}</span>
-          <span>• {{ article.readingTime.text }}</span>
-          <span>• v{{ article.data.version }}</span>
-        </div>
-        {{ authorByline(author, publication) | safe }}
-        {{ tagList(article.data.tags) | safe }}
+{% set bookmarkAuthor = (author and (author.data.name or author.id)) | default('') %}
+{% set payload = {
+  id: article.slug,
+  title: article.data.title,
+  url: article.data.url,
+  excerpt: article.data.excerpt,
+  author: bookmarkAuthor,
+  tags: article.data.tags
+} %}
+<article class="article-card" data-bookmark-target>
+  <header class="article-card__header">
+    {{ bookmarkButton(payload, { context: 'card' }) | safe }}
+    <button
+      type="button"
+      class="icon-button"
+      data-share-button="copy"
+      data-share-url="{{ article.data.url }}"
+      data-share-title="{{ article.data.title }}"
+      data-share-text="{{ shareText }}"
+      aria-label="Copy link to {{ article.data.title }}"
+    >
+      <span aria-hidden="true">⧉</span>
+    </button>
+  </header>
+  <a class="article-card__link" href="{{ article.data.url }}">
+    {% if article.data['cover-image'] %}
+      <div class="article-card__media">
+        <img
+          src="{{ article.data['cover-image'] }}"
+          alt="{{ article.data['cover-image-alt'] or article.data.title }}"
+          class="article-card__image"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
-    </a>
-  </article>
-{% endmacro %}
+    {% endif %}
+    <div class="article-card__body">
+      <h3 class="article-card__title">{{ article.data.title }}</h3>
+      {% if article.data.excerpt %}
+        <p class="article-card__excerpt">{{ article.data.excerpt }}</p>
+      {% endif %}
+      <div class="article-card__meta">
+        <span>{{ article.data['date-published'] | readableDate('en-US') }}</span>
+        <span>• {{ article.readingTime.text }}</span>
+        <span>• v{{ article.data.version }}</span>
+      </div>
+      {{ authorByline(author, publication) | safe }}
+      {{ tagList(article.data.tags) | safe }}
+    </div>
+  </a>
+</article>

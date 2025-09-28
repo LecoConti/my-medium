@@ -3,7 +3,7 @@ layout: layouts/base.njk
 title: Home
 description: "Latest thinking from the My Medium Prototype team."
 ---
-{% from "components/article-card.njk" import articleCard %}
+{% set articleCardTemplate = "components/article-card.njk" %}
 <section class="feed">
   <header class="feed__header">
     <h1 class="feed__title">Latest Articles</h1>
@@ -14,7 +14,7 @@ description: "Latest thinking from the My Medium Prototype team."
       {% for article in collections.articles %}
         {% set author = collections.authors | selectattr('data.handle', 'equalto', article.data['author-handle']) | first %}
         {% set publication = collections.publications | selectattr('data.slug', 'equalto', article.data.publication) | first %}
-        {{ articleCard(article, author, publication) | safe }}
+        {% include articleCardTemplate %}
       {% endfor %}
     </div>
   {% else %}
