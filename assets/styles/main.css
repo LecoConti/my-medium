@@ -457,6 +457,7 @@ img {
 
 .article-card__link {
   display: grid;
+  gap: var(--space-4);
   height: 100%;
   color: inherit;
 }
@@ -469,6 +470,13 @@ img {
 
 .article-card__media {
   position: relative;
+  border-top-left-radius: var(--radius-xl);
+  border-top-right-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--color-surface-elevated, #f1f5fb);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .article-card__image {
@@ -476,6 +484,22 @@ img {
   aspect-ratio: 16 / 10;
   object-fit: cover;
   display: block;
+}
+
+@media (min-width: 48rem) {
+  .article-card__link {
+    grid-template-columns: 160px 1fr;
+    align-items: stretch;
+  }
+
+  .article-card__media {
+    height: 100%;
+    border-radius: var(--radius-lg);
+  }
+
+  .article-card__image {
+    height: 100%;
+  }
 }
 
 .article-card__body {
