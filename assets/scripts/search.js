@@ -26,7 +26,7 @@
     const prevBtn = container.querySelector('[data-search-prev]');
     const nextBtn = container.querySelector('[data-search-next]');
     const pageLabel = container.querySelector('[data-search-page]');
-    const loadingIndicator = container.querySelector('[data-search-results] .loading-indicator');
+    const loadingIndicator = container.querySelector('.loading-indicator');
 
     const params = new URLSearchParams(window.location.search);
     if (input && params.get('q')) {
@@ -35,7 +35,7 @@
 
     const setLoading = (flag) => {
       if (!loadingIndicator) return;
-      loadingIndicator.toggleAttribute('hidden', !flag);
+      loadingIndicator.style.display = flag ? '' : 'none';
     };
 
     let docs = [];
@@ -43,6 +43,7 @@
     let allResults = [];
     let currentQuery = '';
     let currentPage = 1;
+    let loading = false;
 
     const debounce = (fn, delay = DEBOUNCE_DELAY) => {
       let timer = null;
@@ -204,9 +205,9 @@
           fetch('/search-index.json'),
           fetch('/search-docs.json')
         ]);
-        const indexJson = await indexRes.json();
+        const indexText = await indexRes.text();
         docs = await docsRes.json();
-        mini = SearchEngine.loadJSON(indexJson, {
+        mini = SearchEngine.loadJSON(indexText, {
           fields: ['title', 'subtitle', 'content', 'tags', 'author'],
           storeFields: ['title', 'subtitle', 'type', 'url', 'tags', 'author']
         });

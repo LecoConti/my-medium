@@ -436,7 +436,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addWatchTarget(path.join('assets', 'images'));
   eleventyConfig.addWatchTarget(path.join('assets', 'styles'));
   eleventyConfig.addPassthroughCopy({ assets: 'assets' });
-  eleventyConfig.addPassthroughCopy({ 'node_modules/minisearch/dist/minisearch.umd.js': 'assets/vendor/minisearch.js' });
+  eleventyConfig.addPassthroughCopy({ 'node_modules/minisearch/dist/umd/index.js': 'assets/vendor/minisearch.js' });
   eleventyConfig.setLibrary('md', md);
 
   eleventyConfig.on('beforeBuild', () => {
