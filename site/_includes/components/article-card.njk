@@ -29,13 +29,13 @@
     <a class="article-card__link" href="{{ article.data.url }}">
       {% if article.data['cover-image'] %}
         <div class="article-card__media">
-          {% coverImage article.data['cover-image'], {
-            alt: article.data['cover-image-alt'] or article.data.title,
-            caption: null,
-            credit: article.data['cover-image-credit'],
-            figure: false,
-            class: 'article-card__image'
-          } %}
+          <img
+            src="{{ article.data['cover-image'] }}"
+            alt="{{ article.data['cover-image-alt'] or article.data.title }}"
+            class="article-card__image"
+            loading="lazy"
+            decoding="async"
+          />
         </div>
       {% endif %}
       <div class="article-card__body">
